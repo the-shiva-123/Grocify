@@ -1,16 +1,23 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { assets } from '../assets/assets'
 import { UseAppContext } from '../context/AppContext'
+
 const Navbar = () => {
     const [open, setOpen] = React.useState(false)
-    const { user, setUser, setShowUserLogin, navigate } = UseAppContext()
+    const { user, setUser, setShowUserLogin, navigate , setSearchQuery , searchQuery} = UseAppContext()
 
     const logout = async () => {
         setUser(null)
         navigate('/')
     }
+
+    useEffect(()=>{
+        if(searchQuery.length >0){
+            navigate('/products')
+        }
+    },[searchQuery])
     return (
         <nav className="flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-gray-300 bg-white relative transition-all">
 
@@ -20,12 +27,12 @@ const Navbar = () => {
 
             {/* Desktop Menu */}
             <div className="hidden sm:flex items-center gap-8">
-                <NavLink to='/'><a href="#">Home</a></NavLink>
-                <NavLink to='/products'><a href="#">All Products</a></NavLink>
-                <NavLink to='/'><a href="#">Contact Us</a></NavLink>
+                <NavLink to='/' className="hover:text-primary transition">Home</NavLink>
+                <NavLink to='/products' className="hover:text-primary transition">All Products</NavLink>
+                <NavLink to='/' className="hover:text-primary transition">Contact Us</NavLink>
 
                 <div className="hidden lg:flex items-center text-sm gap-2 border border-gray-300 px-3 rounded-full">
-                    <input className="py-1.5 w-full bg-transparent outline-none placeholder-gray-500" type="text" placeholder="Search products" />
+                    <input onChange={(e)=>setSearchQuery(e.target.value)} className="py-1.5 w-full bg-transparent outline-none placeholder-gray-500" type="text" placeholder="Search products" />
                     <img src={assets.search_icon} alt="search" className="w-4 h-4" />
                 </div>
 
