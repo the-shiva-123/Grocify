@@ -5,16 +5,17 @@ import Home from './pages/Home'
 import { Toaster } from 'react-hot-toast'
 import Footer from './Components/Footer'
 import Login from './Components/Login'
-import { UseAppContext } from './context/AppContext'  
+import { UseAppContext } from './context/AppContext'
 import AllProducts from './pages/AllProducts'
 import ProductCategory from './pages/ProductCategory'
+import ProductDetails from './pages/ProductDetails'
+import Cart from './pages/Cart' 
+import AddAddress from './pages/AddAddress'
 
-
-
-const App = () => { 
+const App = () => {
   const { pathname } = useLocation()
   const isSellerPath = pathname.includes('seller')
-  const {showUserLogin}= UseAppContext();
+  const { showUserLogin } = UseAppContext();
 
   return (
     <div>
@@ -26,6 +27,9 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<AllProducts />} />
           <Route path="/products/:category" element={<ProductCategory />} />
+          <Route path="/product/:category/:id" element={<ProductDetails />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/addaddress" element={<AddAddress />} />
         </Routes>
       </div>
 

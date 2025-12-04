@@ -16,6 +16,55 @@ export const AppContextProvider = ({ children }) => {
     const [filteredProducts, setFilterProducts] = useState([])
     const [cartItems, setCartItems] = useState({})
     const [searchQuery, setSearchQuery] = useState("")
+    const [selectedAddress, setSelectedAddress] = useState(0)
+
+    // Dummy addresses state
+    const [dummyAddresses, setDummyAddresses] = useState([
+        {
+            id: 0,
+            name: "Home",
+            fullName: "John Doe",
+            phone: "+1 234 567 8900",
+            address: "123 Main Street, Apartment 4B",
+            city: "New York",
+            state: "NY",
+            zipCode: "10001",
+            country: "USA"
+        },
+        {
+            id: 1,
+            name: "Office",
+            fullName: "John Doe",
+            phone: "+1 234 567 8900",
+            address: "456 Business Ave, Suite 200",
+            city: "Manhattan",
+            state: "NY",
+            zipCode: "10002",
+            country: "USA"
+        },
+        {
+            id: 2,
+            name: "Parents House",
+            fullName: "Robert Doe",
+            phone: "+1 234 567 8901",
+            address: "789 Family Lane",
+            city: "Brooklyn",
+            state: "NY",
+            zipCode: "11201",
+            country: "USA"
+        }
+    ]);
+
+    // Add new address
+    const addNewAddress = (newAddress) => {
+        const addressWithId = {
+            ...newAddress,
+            id: dummyAddresses.length
+        };
+        setDummyAddresses([...dummyAddresses, addressWithId]);
+        setSelectedAddress(addressWithId.id);
+        toast.success("Address added successfully!");
+    }
 
 
     //featch products
@@ -46,9 +95,9 @@ export const AppContextProvider = ({ children }) => {
     //remove item from cart
     const removeFromCart = (itemId) => {
         let cartData = structuredClone(cartItems)
-        if(cartData[itemId]){
+        if (cartData[itemId]) {
             cartData[itemId] -= 1;
-            if(cartData[itemId] <=0){
+            if (cartData[itemId] <= 0) {
                 delete cartData[itemId];
                 setCartItems(cartData);
                 toast.success("Item removed from cart")
@@ -59,12 +108,39 @@ export const AppContextProvider = ({ children }) => {
         toast.success("Item removed from cart")
     }
 
+    //get cart items count
+    const getCartItemsCount = () => {
+        let totalCount = 0;
+        for (const key in cartItems) {
+            totalCount += cartItems[key];
+        }
+        return totalCount;
+    }
+
+    //get total cart amount
+    const getCartAmount = () => {
+        let totalAmount = 0;
+        for (const items in cartItems) {
+            let itemInfo = Products.find((product) => product._id === items);
+            if (cartItems[items] > 0) {
+                totalAmount += itemInfo.offerPrice * cartItems[items];
+            }
+        }
+        return Math.floor(totalAmount * 100) / 100;
+    }
+
     useEffect(() => {
         fetchProducts()
     }, [])
-    const value = { user, setUser, navigate, isSeller, setIsSeller,
-         showUserLogin, setShowUserLogin, Products, currency, cartItems,
-          addToCart, updateCartItem, removeFromCart, searchQuery, setSearchQuery, filteredProducts, setFilterProducts };
+
+    const value = {
+        user, setUser, navigate, isSeller, setIsSeller,
+        showUserLogin, setShowUserLogin, Products, currency, cartItems,
+        addToCart, updateCartItem, removeFromCart, searchQuery, setSearchQuery,
+        filteredProducts, setFilterProducts, getCartItemsCount, getCartAmount,
+        dummyAddresses, selectedAddress, setSelectedAddress, addNewAddress
+    };
+
     return (
         <AppContext.Provider value={value}>
             {children}
