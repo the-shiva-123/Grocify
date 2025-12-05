@@ -6,8 +6,9 @@ const AddAddress = () => {
     const { navigate, addNewAddress } = UseAppContext();
 
     const [formData, setFormData] = useState({
-        name: '',
-        fullName: '',
+        firstName: '',
+        lastName: '',
+        email: '',
         phone: '',
         address: '',
         city: '',
@@ -36,15 +37,15 @@ const AddAddress = () => {
     const validateForm = () => {
         const newErrors = {};
 
-        if (!formData.name.trim()) newErrors.name = 'Address label is required';
-        if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
+        if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
+        if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
+        if (!formData.email.trim()) newErrors.email = 'Email is required';
+        else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Invalid email address';
         if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
-        else if (!/^\+?[\d\s-()]+$/.test(formData.phone)) newErrors.phone = 'Invalid phone number';
-        if (!formData.address.trim()) newErrors.address = 'Address is required';
+        if (!formData.address.trim()) newErrors.address = 'Street address is required';
         if (!formData.city.trim()) newErrors.city = 'City is required';
         if (!formData.state.trim()) newErrors.state = 'State is required';
         if (!formData.zipCode.trim()) newErrors.zipCode = 'ZIP code is required';
-        else if (!/^\d{5}(-\d{4})?$/.test(formData.zipCode)) newErrors.zipCode = 'Invalid ZIP code';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -54,217 +55,163 @@ const AddAddress = () => {
         e.preventDefault();
 
         if (validateForm()) {
-            addNewAddress(formData);
+            const submissionData = {
+                ...formData,
+                name: 'Home', // Default label as per plan
+                fullName: `${formData.firstName} ${formData.lastName}`
+            };
+            addNewAddress(submissionData);
             navigate('/cart');
         }
     };
 
-    const handleCancel = () => {
-        navigate('/cart');
-    };
-
     return (
         <div className='mt-16 pb-16 max-w-7xl mx-auto px-6'>
+            <div className='mb-8'>
+                <h1 className='text-2xl md:text-3xl font-medium text-gray-800'>
+                    Add Shipping <span className='text-primary font-semibold'>Address</span>
+                </h1>
+            </div>
+
             <div className='flex flex-col md:flex-row gap-10'>
                 {/* Left Side - Form */}
                 <div className='w-full md:w-1/2 order-1 md:order-1'>
-                    <div className='mb-8'>
-                        <h1 className='text-2xl md:text-3xl font-medium text-gray-800'>
-                            Add Shipping <span className='text-primary font-semibold'>Address</span>
-                        </h1>
-                        <p className='text-gray-500 mt-2'>Please fill in the details below to add a new delivery address</p>
-                    </div>
+                    <form onSubmit={handleSubmit} className='space-y-4'>
 
-                    <form onSubmit={handleSubmit} className='bg-white border border-gray-200 rounded-xl p-6 md:p-8 shadow-sm'>
-                        {/* Address Label */}
-                        <div className='mb-6'>
-                            <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                Address Label <span className='text-red-500'>*</span>
-                            </label>
-                            <div className='flex gap-3 flex-wrap'>
-                                {['Home', 'Office', 'Other'].map((label) => (
-                                    <button
-                                        key={label}
-                                        type='button'
-                                        onClick={() => setFormData(prev => ({ ...prev, name: label }))}
-                                        className={`px-4 py-2 rounded-lg border transition ${formData.name === label
-                                                ? 'border-primary bg-primary text-white'
-                                                : 'border-gray-300 text-gray-700 hover:border-primary'
-                                            }`}
-                                    >
-                                        {label}
-                                    </button>
-                                ))}
+                        {/* Row 1: First Name & Last Name */}
+                        <div className='flex gap-4'>
+                            <div className='w-1/2'>
+                                <input
+                                    type='text'
+                                    name='firstName'
+                                    value={formData.firstName}
+                                    onChange={handleChange}
+                                    placeholder='First Name'
+                                    className={`w-full px-4 py-3 border rounded-lg outline-none transition bg-gray-50 ${errors.firstName ? 'border-red-500' : 'border-gray-200 focus:border-primary'}`}
+                                />
+                                {errors.firstName && <p className='text-red-500 text-xs mt-1'>{errors.firstName}</p>}
                             </div>
-                            <input
-                                type='text'
-                                name='name'
-                                value={formData.name}
-                                onChange={handleChange}
-                                placeholder='Or enter custom label'
-                                className={`w-full mt-3 px-4 py-3 border rounded-lg outline-none transition ${errors.name ? 'border-red-500' : 'border-gray-300 focus:border-primary'
-                                    }`}
-                            />
-                            {errors.name && <p className='text-red-500 text-xs mt-1'>{errors.name}</p>}
+                            <div className='w-1/2'>
+                                <input
+                                    type='text'
+                                    name='lastName'
+                                    value={formData.lastName}
+                                    onChange={handleChange}
+                                    placeholder='Last Name'
+                                    className={`w-full px-4 py-3 border rounded-lg outline-none transition bg-gray-50 ${errors.lastName ? 'border-red-500' : 'border-gray-200 focus:border-primary'}`}
+                                />
+                                {errors.lastName && <p className='text-red-500 text-xs mt-1'>{errors.lastName}</p>}
+                            </div>
                         </div>
 
-                        {/* Full Name */}
-                        <div className='mb-6'>
-                            <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                Full Name <span className='text-red-500'>*</span>
-                            </label>
+                        {/* Row 2: Email Address */}
+                        <div>
                             <input
-                                type='text'
-                                name='fullName'
-                                value={formData.fullName}
+                                type='email'
+                                name='email'
+                                value={formData.email}
                                 onChange={handleChange}
-                                placeholder='John Doe'
-                                className={`w-full px-4 py-3 border rounded-lg outline-none transition ${errors.fullName ? 'border-red-500' : 'border-gray-300 focus:border-primary'
-                                    }`}
+                                placeholder='Email address'
+                                className={`w-full px-4 py-3 border rounded-lg outline-none transition bg-gray-50 ${errors.email ? 'border-red-500' : 'border-gray-200 focus:border-primary'}`}
                             />
-                            {errors.fullName && <p className='text-red-500 text-xs mt-1'>{errors.fullName}</p>}
+                            {errors.email && <p className='text-red-500 text-xs mt-1'>{errors.email}</p>}
                         </div>
 
-                        {/* Phone Number */}
-                        <div className='mb-6'>
-                            <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                Phone Number <span className='text-red-500'>*</span>
-                            </label>
-                            <input
-                                type='tel'
-                                name='phone'
-                                value={formData.phone}
-                                onChange={handleChange}
-                                placeholder='+1 234 567 8900'
-                                className={`w-full px-4 py-3 border rounded-lg outline-none transition ${errors.phone ? 'border-red-500' : 'border-gray-300 focus:border-primary'
-                                    }`}
-                            />
-                            {errors.phone && <p className='text-red-500 text-xs mt-1'>{errors.phone}</p>}
-                        </div>
-
-                        {/* Street Address */}
-                        <div className='mb-6'>
-                            <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                Street Address <span className='text-red-500'>*</span>
-                            </label>
+                        {/* Row 3: Street Address */}
+                        <div>
                             <input
                                 type='text'
                                 name='address'
                                 value={formData.address}
                                 onChange={handleChange}
-                                placeholder='123 Main Street, Apartment 4B'
-                                className={`w-full px-4 py-3 border rounded-lg outline-none transition ${errors.address ? 'border-red-500' : 'border-gray-300 focus:border-primary'
-                                    }`}
+                                placeholder='Street'
+                                className={`w-full px-4 py-3 border rounded-lg outline-none transition bg-gray-50 ${errors.address ? 'border-red-500' : 'border-gray-200 focus:border-primary'}`}
                             />
                             {errors.address && <p className='text-red-500 text-xs mt-1'>{errors.address}</p>}
                         </div>
 
-                        {/* City, State, ZIP Code */}
-                        <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-6'>
-                            <div>
-                                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                    City <span className='text-red-500'>*</span>
-                                </label>
+                        {/* Row 4: City & State */}
+                        <div className='flex gap-4'>
+                            <div className='w-1/2'>
                                 <input
                                     type='text'
                                     name='city'
                                     value={formData.city}
                                     onChange={handleChange}
-                                    placeholder='New York'
-                                    className={`w-full px-4 py-3 border rounded-lg outline-none transition ${errors.city ? 'border-red-500' : 'border-gray-300 focus:border-primary'
-                                        }`}
+                                    placeholder='City'
+                                    className={`w-full px-4 py-3 border rounded-lg outline-none transition bg-gray-50 ${errors.city ? 'border-red-500' : 'border-gray-200 focus:border-primary'}`}
                                 />
                                 {errors.city && <p className='text-red-500 text-xs mt-1'>{errors.city}</p>}
                             </div>
-
-                            <div>
-                                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                    State <span className='text-red-500'>*</span>
-                                </label>
+                            <div className='w-1/2'>
                                 <input
                                     type='text'
                                     name='state'
                                     value={formData.state}
                                     onChange={handleChange}
-                                    placeholder='NY'
-                                    className={`w-full px-4 py-3 border rounded-lg outline-none transition ${errors.state ? 'border-red-500' : 'border-gray-300 focus:border-primary'
-                                        }`}
+                                    placeholder='State'
+                                    className={`w-full px-4 py-3 border rounded-lg outline-none transition bg-gray-50 ${errors.state ? 'border-red-500' : 'border-gray-200 focus:border-primary'}`}
                                 />
                                 {errors.state && <p className='text-red-500 text-xs mt-1'>{errors.state}</p>}
                             </div>
+                        </div>
 
-                            <div>
-                                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                    ZIP Code <span className='text-red-500'>*</span>
-                                </label>
+                        {/* Row 5: Zip Code & Country */}
+                        <div className='flex gap-4'>
+                            <div className='w-1/2'>
                                 <input
                                     type='text'
                                     name='zipCode'
                                     value={formData.zipCode}
                                     onChange={handleChange}
-                                    placeholder='10001'
-                                    className={`w-full px-4 py-3 border rounded-lg outline-none transition ${errors.zipCode ? 'border-red-500' : 'border-gray-300 focus:border-primary'
-                                        }`}
+                                    placeholder='Zip code'
+                                    className={`w-full px-4 py-3 border rounded-lg outline-none transition bg-gray-50 ${errors.zipCode ? 'border-red-500' : 'border-gray-200 focus:border-primary'}`}
                                 />
                                 {errors.zipCode && <p className='text-red-500 text-xs mt-1'>{errors.zipCode}</p>}
                             </div>
+                            <div className='w-1/2'>
+                                <input
+                                    type='text'
+                                    name='country'
+                                    value={formData.country}
+                                    onChange={handleChange}
+                                    placeholder='Country'
+                                    className='w-full px-4 py-3 border border-gray-200 rounded-lg outline-none transition bg-gray-50 focus:border-primary'
+                                />
+                            </div>
                         </div>
 
-                        {/* Country */}
-                        <div className='mb-8'>
-                            <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                Country
-                            </label>
-                            <select
-                                name='country'
-                                value={formData.country}
+                        {/* Row 6: Phone */}
+                        <div>
+                            <input
+                                type='tel'
+                                name='phone'
+                                value={formData.phone}
                                 onChange={handleChange}
-                                className='w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:border-primary transition bg-white'
-                            >
-                                <option value='USA'>United States</option>
-                                <option value='Canada'>Canada</option>
-                                <option value='UK'>United Kingdom</option>
-                                <option value='India'>India</option>
-                            </select>
+                                placeholder='Phone'
+                                className={`w-full px-4 py-3 border rounded-lg outline-none transition bg-gray-50 ${errors.phone ? 'border-red-500' : 'border-gray-200 focus:border-primary'}`}
+                            />
+                            {errors.phone && <p className='text-red-500 text-xs mt-1'>{errors.phone}</p>}
                         </div>
 
-                        {/* Action Buttons */}
-                        <div className='flex flex-col-reverse md:flex-row gap-4'>
-                            <button
-                                type='button'
-                                onClick={handleCancel}
-                                className='flex-1 py-3.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition'
-                            >
-                                Cancel
-                            </button>
+                        {/* Save Button */}
+                        <div className='mt-6'>
                             <button
                                 type='submit'
-                                className='flex-1 py-3.5 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition shadow-md hover:shadow-lg transform active:scale-[0.99]'
+                                className='w-full py-4 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition shadow-md hover:shadow-lg transform active:scale-[0.99] uppercase text-sm tracking-wide'
                             >
-                                Save Address
+                                SAVE ADDRESS
                             </button>
                         </div>
                     </form>
-
-                    {/* Info Card */}
-                    <div className='mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4 flex gap-3'>
-                        <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' className='text-blue-600 flex-shrink-0'>
-                            <path d='M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z' stroke='currentColor' strokeWidth='2' />
-                            <path d='M12 16V12M12 8H12.01' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
-                        </svg>
-                        <div>
-                            <p className='text-sm font-medium text-blue-900'>Delivery Information</p>
-                            <p className='text-xs text-blue-700 mt-1'>Make sure your address is complete and accurate to ensure smooth delivery of your orders.</p>
-                        </div>
-                    </div>
                 </div>
 
                 {/* Right Side - Image */}
-                <div className='w-full md:w-1/2 order-2 md:order-2 flex justify-center md:justify-end items-start'>
+                <div className='w-full md:w-1/2 order-2 md:order-2 flex justify-center items-center'>
                     <img
                         src={assets.add_address_image}
                         alt="Add Address"
-                        className='w-full max-w-sm md:max-w-full object-contain md:sticky md:top-32 rounded-lg'
+                        className='w-full max-w-md object-contain'
                     />
                 </div>
             </div>
