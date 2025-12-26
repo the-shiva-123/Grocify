@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { assets, categories } from "../../assets/assets";
+// Shows all the product details and add product
 const AddProduct = () => {
 
     const [files, setFiles] = React.useState([]);
