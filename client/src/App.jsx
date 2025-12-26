@@ -1,5 +1,5 @@
 import React from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import NavBar from './Components/Navbar'
 import Home from './pages/Home'
 import { Toaster } from 'react-hot-toast'
@@ -9,16 +9,22 @@ import { UseAppContext } from './context/AppContext'
 import AllProducts from './pages/AllProducts'
 import ProductCategory from './pages/ProductCategory'
 import ProductDetails from './pages/ProductDetails'
-import Cart from './pages/Cart' 
+import Cart from './pages/Cart'
 import AddAddress from './pages/AddAddress'
 import MyOrders from './pages/MyOrders'
+import SellerLogin from './Components/seller/SellerLogin'
+import SellerLayout from './pages/seller/SellerLayout'
+import AddProduct from './Components/seller/AddProduct'
+import ProductList from './Components/seller/ProductList'
+import Orders from './Components/seller/Orders'
+
 const App = () => {
   const { pathname } = useLocation()
   const isSellerPath = pathname.includes('seller')
-  const { showUserLogin } = UseAppContext();
+  const { showUserLogin, isSeller } = UseAppContext();
 
   return (
-    <div>
+    <div className='text-default min-h-screen text-gray-700 bg-white'>
       {isSellerPath ? null : <NavBar />}
       {showUserLogin ? <Login /> : null}
       <Toaster />
@@ -31,6 +37,12 @@ const App = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/addaddress" element={<AddAddress />} />
           <Route path="/myorders" element={<MyOrders />} />
+          <Route path="/sellerlogin" element={isSeller ? <Navigate to="/seller" /> : <SellerLogin />} />
+          <Route path="/seller/*" element={isSeller ? <SellerLayout /> : <Navigate to="/sellerlogin" />}>
+            <Route index element={<AddProduct />} />
+            <Route path='product-list' element={<ProductList />} />
+            <Route path='orders' element={<Orders />} />
+          </Route>
         </Routes>
       </div>
 
