@@ -3,7 +3,7 @@ const useSchema=mongoose.Schema({
     name:{
         type:String,
         required:true
-    }   ,
+    },
     email:{
         type:String,
         unique:true,
@@ -16,5 +16,5 @@ const useSchema=mongoose.Schema({
     cartItems:{type: Object, default: {}},
     
 }, {minimize:false})  
-const User= mongoose.models.User ||mongoose.model("User",useSchema);
+const User= mongoose.models.User || mongoose.model("User",useSchema);
 export default User;
