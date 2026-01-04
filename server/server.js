@@ -9,6 +9,7 @@ import connectCloudinary from "./configs/cloudinary.js";
 import productRouter from "./routes/productRoute.js";
 import cartRouter from "./routes/cartRoute.js";
 import addressRouter from "./routes/addressRoute.js";
+import orderRouter from "./routes/orderRoute.js";
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,6 +29,7 @@ app.get("/", (req, res) => {
 app.use("/api/user", userRoute);
 app.use("/api/seller", sellerRoute);
 app.use("/api/product", productRouter)
-app.use("/api/product",cartRouter)
-app.use("/api/address",addressRouter)
+app.use("/api/cart", cartRouter)
+app.use("/api/address", addressRouter)
+app.use('/api/order', orderRouter)
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

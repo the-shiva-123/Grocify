@@ -1,9 +1,9 @@
-import mongoose from "mongoose";
-import authUser from "../middlewares/authUser";
-import { updateCardData } from "../controllers/cardController";
+import express from "express";
+import authUser from "../middlewares/authUser.js";
+import { updateCardData } from "../controllers/cardController.js";
 
-const cartRouter = mongoose.Router();
+const cartRouter = express.Router();
 
-cartRouter.post('/update',authUser,updateCardData)
+cartRouter.post('/update', authUser, updateCardData)
 
-export default cartRouter
+export default cartRouter;

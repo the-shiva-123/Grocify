@@ -1,6 +1,6 @@
 //Update User CardData : /api/card/update
 
-import User from "../models/user";
+import User from "../models/user.js";
 
 export const updateCardData= async (req,res)=>{
     try {
